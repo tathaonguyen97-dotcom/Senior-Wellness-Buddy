@@ -2,48 +2,48 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# --- CẤU HÌNH GIAO DIỆN NÂNG CAO ---
+# --- UI CONFIGURATION ---
 st.set_page_config(page_title="Senior Wellness Buddy", layout="wide")
 
-# CSS để thay đổi hoàn toàn bố cục
+# Custom CSS for the Competition-Ready Interface
 st.markdown("""
     <style>
-    /* Tổng thể font chữ to và rõ */
+    /* Global Font Size for Seniors */
     html, body, [class*="st-"] {
-        font-size: 20px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 22px;
+        font-family: 'Segoe UI', sans-serif;
     }
     
-    /* Ẩn Header mặc định của Streamlit */
     header {visibility: hidden;}
     
-    /* Sidebar tùy chỉnh */
+    /* Fixed Sidebar Styling */
     [data-testid="stSidebar"] {
-        background-color: #2D6A4F;
-        min-width: 350px !important;
-    }
-    
-    /* Tiêu đề góc phải trên cùng */
-    .top-right-title {
-        position: absolute;
-        top: -50px;
-        right: 0px;
-        color: #1B4332;
-        font-size: 45px !important;
-        font-weight: 800;
-        z-index: 999;
+        background-color: #1B4332;
+        min-width: 380px !important;
     }
 
-    /* Thẻ nội dung (Content Cards) */
+    /* Top Right Title */
+    .top-right-title {
+        position: absolute;
+        top: -60px;
+        right: 10px;
+        color: #1B4332;
+        font-size: 50px !important;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    /* Dashboard Cards */
     .content-card {
         background: white;
         padding: 30px;
         border-radius: 25px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        border-top: 8px solid #52B788;
-        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-top: 10px solid #52B788;
+        margin-bottom: 30px;
     }
 
+    /* Buttons */
     .stButton>button {
         height: 3.5em;
         font-size: 22px !important;
@@ -55,33 +55,37 @@ st.markdown("""
     }
     .stButton>button:hover {
         background-color: #1B4332;
-        transform: scale(1.02);
+        transform: translateY(-2px);
     }
-    </style>
-    """, unsafe_allow_name_allowed=True)
-
-# --- DỮ LIỆU GIẢ LẬP (MOCK DATA) ---
-today_date = datetime.now().strftime("%A, %d %B %Y")
-weather_info = "📍 Tainan | 🌡️ 31°C Sunny | 🍃 AQI: 42 (Good)"
-
-# --- SIDEBAR (BÊN TRÁI) ---
-with st.sidebar:
-    st.markdown(f"<p style='color: white; font-size: 18px;'>{today_date}</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color: #D8F3DC; font-size: 20px; font-weight: bold;'>{weather_info}</p>", unsafe_allow_html=True)
-    st.write("---")
-    st.markdown("<h2 style='color: white;'>Menu</h2>", unsafe_allow_html=True)
     
-    # Navigation bằng Radio button giả lập menu dọc
+    /* Sidebar Text */
+    .sidebar-text { color: #D8F3DC; font-size: 22px; margin-bottom: 10px; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- MOCK DATA ---
+today_date = datetime.now().strftime("%A, %d %B %Y")
+weather_info = "📍 Tainan | 🌡️ 31°C Sunny"
+
+# --- SIDEBAR (LEFT) ---
+with st.sidebar:
+    st.markdown(f"<p style='color: white; font-size: 20px;'>{today_date}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p class='sidebar-text'><b>{weather_info}</b></p>", unsafe_allow_html=True)
+    st.write("---")
+    
+    st.markdown("<h2 style='color: white;'>How are you today?</h2>", unsafe_allow_html=True)
+    
+    # Large Vertical Navigation
     menu = st.radio(
-        "Choose an activity:",
-        ["🍎 What to eat today?", "🎊 Where to go?", "💪 Feeling active?", "📅 My Journey"],
-        index=0
+        label="Select a section:",
+        options=["🍎 What to eat today?", "🎊 Where to go?", "💪 Feeling active?", "📅 My Journey"],
+        index=0,
+        label_visibility="collapsed"
     )
     st.write("---")
-    st.markdown("<p style='color: #D8F3DC; font-size: 14px;'>© 2026 Senior Wellness Buddy Project</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #95D5B2; font-size: 16px;'>Version 2.0 - Tainan Excellence</p>", unsafe_allow_html=True)
 
-# --- NỘI DUNG CHÍNH (BÊN PHẢI) ---
-# Tiêu đề góc phải trên cùng
+# --- MAIN CONTENT (RIGHT) ---
 st.markdown("<h1 class='top-right-title'>Senior Wellness Buddy</h1>", unsafe_allow_html=True)
 
 if 'history' not in st.session_state:
@@ -91,85 +95,87 @@ def log_activity(name, category):
     new_entry = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), name, category]], 
                              columns=['Date', 'Activity', 'Category'])
     st.session_state.history = pd.concat([st.session_state.history, new_entry], ignore_index=True)
-    st.toast(f"Saved to your calendar: {name}!", icon="✅")
+    st.toast(f"Logged: {name}", icon="🌟")
 
-# LOGIC HIỂN THỊ THEO MENU
+# MENU LOGIC
 if menu == "🍎 What to eat today?":
-    st.header("Daily Healthy Nutrition")
+    st.header("Healthy Nutrition for You")
     col1, col2 = st.columns([1, 1])
     
     with col1:
         st.markdown("""
             <div class='content-card'>
-                <h3>Today's Recipe: Steamed Sea Bass with Ginger</h3>
-                <p><b>Health Benefit:</b> High in Omega-3 for brain health and very easy to digest for seniors.</p>
-                <p><b>Ingredients:</b> Sea bass, ginger slices, soy sauce, green onions.</p>
+                <h3>Recipe: Steamed Fish with Ginger</h3>
+                <p><b>Why?</b> Soft texture, high protein, and warm ginger is perfect for digestion.</p>
+                <p><b>Quick Steps:</b> Clean fish, add ginger slices, steam for 10 mins, add light soy sauce.</p>
             </div>
         """, unsafe_allow_html=True)
-        st.subheader("🎵 Relaxing Music for Cooking")
-        # Video 1: Bài hát thư giãn (Ví dụ: Nhạc không lời hoặc nhạc cũ)
-        st.video("https://www.youtube.com/watch?v=5as_V_D7Pew") 
+        st.subheader("🎵 Listen to some music")
+        # Video 1: Classic Relaxing Song (Teresa Teng - The Moon Represents My Heart)
+        st.video("https://www.youtube.com/watch?v=-Be2mjtG08k") 
 
     with col2:
-        st.subheader("👨‍🍳 Step-by-Step Tutorial")
-        # Video 2: Hướng dẫn nấu ăn thực tế (Ví dụ: Món cá hấp)
+        st.subheader("👨‍🍳 Cooking Tutorial")
+        # Video 2: Actual Cooking Video for Steamed Fish
         st.video("https://www.youtube.com/watch?v=M9Nn79Y6QzM")
         if st.button("I cooked this healthy meal!"):
-            log_activity("Cooked Steamed Sea Bass", "Nutrition")
+            log_activity("Cooked Steamed Fish", "Nutrition")
 
 elif menu == "🎊 Where to go?":
-    st.header("Community Events in Tainan")
-    events = [
-        {"title": "Morning Tai Chi Workshop", "loc": "Tainan Park", "time": "07:30 AM", "desc": "Join local seniors for a refreshing session of Tai Chi."},
-        {"title": "Tea Art Appreciation", "loc": "Chihkan Tower Culture Hall", "time": "02:00 PM", "desc": "Learn the history of Oolong tea and enjoy free tasting."}
-    ]
-    for e in events:
-        st.markdown(f"""
-            <div class='content-card'>
-                <h3>{e['title']}</h3>
-                <p>📍 <b>Location:</b> {e['loc']} | 🕒 <b>Time:</b> {e['time']}</p>
-                <p>{e['desc']}</p>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button(f"Mark attendance for {e['title']}"):
-            log_activity(e['title'], "Social")
+    st.header("Local Events in Tainan Area")
+    st.markdown("""
+        <div class='content-card'>
+            <h3>📍 Tainan Senior Morning Tai Chi</h3>
+            <p><b>Location:</b> Tainan Park (Main Plaza)</p>
+            <p><b>Time:</b> 07:30 AM - 08:30 AM</p>
+            <p><b>Detail:</b> A free, gentle exercise session for seniors. All skill levels welcome!</p>
+        </div>
+        <div class='content-card'>
+            <h3>📍 Traditional Tea Tasting Class</h3>
+            <p><b>Location:</b> Chihkan Tower Cultural Hall</p>
+            <p><b>Time:</b> 02:00 PM - 03:30 PM</p>
+            <p><b>Detail:</b> Learn about local tea varieties and enjoy free samples of Oolong tea.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("I'm heading out to an event!"):
+        log_activity("Attended Local Event", "Social")
 
 elif menu == "💪 Feeling active?":
-    st.header("Body & Mind Activities")
+    st.header("Body & Mind Enrichment")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("""
             <div class='content-card'>
-                <h3>Outdoor Activity</h3>
-                <p><b>Safe Walk:</b> Anping Canal Path.</p>
-                <p>Enjoy the breeze and sunset. The path is flat and wheelchair accessible.</p>
+                <h3>Physical Activity</h3>
+                <p><b>Suggestion:</b> 20-minute walk at Anping Canal.</p>
+                <p>The path is flat, safe, and offers a beautiful breeze from the water.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Completed my walk"):
+        if st.button("Finished my daily walk"):
             log_activity("Anping Canal Walk", "Physical")
     
     with c2:
         st.markdown("""
             <div class='content-card'>
-                <h3>Mental Enrichment</h3>
-                <p><b>Reading:</b> 'The Wonders of Tainan History'.</p>
-                <p>Keeping the mind sharp is just as important as the body.</p>
+                <h3>Mental Activity</h3>
+                <p><b>Suggestion:</b> Read 'Tainan's Hidden Gems'</p>
+                <p>Spend 30 minutes reading to keep your mind sharp and discover your city.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Finished reading session"):
+        if st.button("Finished my reading time"):
             log_activity("Reading History", "Mental")
 
 elif menu == "📅 My Journey":
-    st.header("Your Personal Wellness Calendar")
+    st.header("Your Personal Wellness Record")
     if st.session_state.history.empty:
-        st.info("No activities recorded yet. Let's start with a walk or a meal!")
+        st.info("Your journey starts today! Try one of the activities above.")
     else:
-        st.table(st.session_state.history)
+        # Display table with bigger font
+        st.dataframe(st.session_state.history, use_container_width=True)
         
-        # PHÂN TÍCH NHU CẦU (RESEARCH COMPONENT)
-        st.markdown("""<div class='content-card'><h3>Smart Insight</h3>""", unsafe_allow_html=True)
-        counts = st.session_state.history['Category'].value_counts()
-        fav = counts.idxmax()
-        st.write(f"Your activity log shows a strong preference for **{fav}**.")
-        st.write("Based on this, we are preparing more similar suggestions for your next week!")
+        # RESEARCH COMPONENT: Pattern Analysis
+        st.markdown("<div class='content-card'><h3>📊 Behavioral Insight</h3>", unsafe_allow_html=True)
+        top_cat = st.session_state.history['Category'].value_counts().idxmax()
+        st.write(f"Excellent! Your record shows you are very consistent with **{top_cat}** activities.")
+        st.write("We will prioritize these types of recommendations to fit your lifestyle.")
         st.markdown("</div>", unsafe_allow_html=True)
